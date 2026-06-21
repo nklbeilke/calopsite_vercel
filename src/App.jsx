@@ -14,6 +14,12 @@ import AprendaMeioAmbiente from "./pages/AprendaMeioAmbiente";
 import Calopsita from "./pages/Calopsita"
 import Periquito from "./pages/Periquito"
 import Canario from "./pages/Canario"
+import Agapornis from "./pages/Agapornis";
+import Papagaio from "./pages/Papagaio";
+import RingNeck from "./pages/RingNeck";
+
+import Login from "./pages/Login";
+import Cadastro from "./pages/Cadastro";
 
 export default function App() {
 
@@ -92,6 +98,24 @@ export default function App() {
           path="/aprenda/aves/canario"
           element={<Canario />}
         />
+
+                <Route
+          path="/aprenda/aves/agapornis"
+          element={<Agapornis />}
+        />
+
+        <Route
+          path="/aprenda/aves/papagaio"
+          element={<Papagaio />}
+        />
+
+        <Route
+          path="/aprenda/aves/ringneck"
+          element={<RingNeck />}
+        />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
       </Routes>
 
     </>
