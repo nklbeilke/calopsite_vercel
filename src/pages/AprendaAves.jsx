@@ -43,9 +43,7 @@ const aves = [
 export default function AprendaAves() {
   return (
     <main className="bg-[#FFF7EA] min-h-screen px-8 py-12">
-
       <div className="max-w-[1400px] mx-auto">
-
         <h1 className="text-5xl font-bold text-center text-[#3B2F2F] mb-4">
           Aves
         </h1>
@@ -54,45 +52,32 @@ export default function AprendaAves() {
           Conheça diferentes espécies e aprenda sobre seus cuidados.
         </p>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {aves.map((ave) => (
-
             <Link
               key={ave.nome}
               to={ave.rota}
               className="group block"
             >
-
-              <div className="relative overflow-hidden rounded-3xl">
+              <div className="overflow-hidden rounded-3xl">
                 <img
                   src={ave.imagem}
                   alt={ave.nome}
                   className="
                     w-full
                     h-auto
-                    aspect-square
-                    object-cover
-                    transition-all
+                    object-contain
+                    rounded-3xl
+                    transition
                     duration-300
                     group-hover:scale-105
-                    group-hover:shadow-xl
                   "
                 />
               </div>
-
-              <p className="mt-3 text-center text-sm font-semibold text-[#3B2F2F]">
-                {ave.nome}
-              </p>
-
             </Link>
-
           ))}
-
         </div>
-
       </div>
-
     </main>
   )
 }
