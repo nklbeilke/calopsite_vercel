@@ -6,6 +6,9 @@ import canario from "../assets/canario.png"
 import agapornis from "../assets/agapornis.png"
 import papagaio from "../assets/papagaio.png"
 import ringneck from "../assets/ringneck.png"
+import cacatua from "../assets/cacatua.png"
+import arara from "../assets/arara.png"
+import coruja from "../assets/coruja.png"
 
 const aves = [
   {
@@ -38,26 +41,51 @@ const aves = [
     imagem: ringneck,
     rota: "/aprenda/aves/ringneck",
   },
+  {
+    nome: "Cacatua",
+    imagem: cacatua,
+    rota: "/aprenda/aves/cacatua",
+  },
+  {
+    nome: "Arara",
+    imagem: arara,
+    rota: "/aprenda/aves/arara",
+  },
+  {
+    nome: "Coruja",
+    imagem: coruja,
+    rota: "/aprenda/aves/coruja",
+  },
 ]
 
 export default function AprendaAves() {
   return (
     <main className="bg-[#FFF7EA] min-h-screen px-8 py-12">
       <div className="max-w-[1400px] mx-auto">
+
         <h1 className="text-5xl font-bold text-center text-[#3B2F2F] mb-4">
           Aves
         </h1>
 
-        <p className="text-center text-gray-600 mb-12">
-          Conheça diferentes espécies e aprenda sobre seus cuidados.
+        <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-14">
+          Explore informações confiáveis sobre diferentes espécies de aves,
+          conheça suas características, alimentação, comportamento e os
+          principais cuidados para promover seu bem-estar.
         </p>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {aves.map((ave) => (
             <Link
               key={ave.nome}
               to={ave.rota}
-              className="group block"
+              className="
+                block
+                rounded-3xl
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-xl
+              "
             >
               <div className="overflow-hidden rounded-3xl">
                 <img
@@ -68,15 +96,13 @@ export default function AprendaAves() {
                     h-auto
                     object-contain
                     rounded-3xl
-                    transition
-                    duration-300
-                    group-hover:scale-105
                   "
                 />
               </div>
             </Link>
           ))}
         </div>
+
       </div>
     </main>
   )
