@@ -6,212 +6,204 @@ export default function MonteHabitat() {
   const [comportamento, setComportamento] = useState("");
   const [resultado, setResultado] = useState(null);
 
+  const especies = [
+    { value: "calopsita", label: "Calopsita" },
+    { value: "periquito", label: "Periquito" },
+    { value: "canario", label: "Canário" },
+    { value: "agapornis", label: "Agapornis" },
+    { value: "papagaio", label: "Papagaio" },
+    { value: "ringneck", label: "Ring Neck" },
+    { value: "cacatua", label: "Cacatua" },
+    { value: "arara", label: "Arara" },
+    { value: "coruja", label: "Coruja" },
+  ];
+
   function gerarHabitat() {
-    const recomendacoes = {
-      calopsita: {
-        filhote: {
-          calma: {
-            gaiola: "Gaiola média com boa ventilação",
-            brinquedo: "Brinquedos leves e seguros",
-            poleiro: "Poleiro natural de madeira",
-          },
-          ativa: {
-            gaiola: "Gaiola espaçosa para exercícios",
-            brinquedo: "Escada e balanço interativo",
-            poleiro: "Poleiros variados",
-          },
-          curiosa: {
-            gaiola: "Habitat com espaço para exploração",
-            brinquedo: "Kit de enriquecimento ambiental",
-            poleiro: "Poleiro natural com texturas",
-          },
-        },
+    if (!especie || !idade || !comportamento) {
+      setResultado(null);
+      return;
+    }
 
-        adulta: {
-          calma: {
-            gaiola: "Gaiola confortável para calopsita adulta",
-            brinquedo: "Balanço simples e argolas",
-            poleiro: "Poleiro natural anatômico",
-          },
-          ativa: {
-            gaiola: "Viveiro grande para calopsita",
-            brinquedo: "Playground com escadas e cordas",
-            poleiro: "Poleiros de diferentes espessuras",
-          },
-          curiosa: {
-            gaiola: "Habitat completo com áreas de exploração",
-            brinquedo: "Brinquedos de forrageamento",
-            poleiro: "Poleiro natural premium",
-          },
-        },
-      },
+    const nomeAve = especies.find((ave) => ave.value === especie)?.label;
 
-      periquito: {
-        filhote: {
-          calma: {
-            gaiola: "Gaiola compacta segura",
-            brinquedo: "Argolas pequenas",
-            poleiro: "Poleiro básico de madeira",
-          },
-          ativa: {
-            gaiola: "Gaiola média com espaço para voo curto",
-            brinquedo: "Escada e balanço colorido",
-            poleiro: "Poleiros finos variados",
-          },
-          curiosa: {
-            gaiola: "Gaiola com brinquedos interativos",
-            brinquedo: "Kit de brinquedos coloridos",
-            poleiro: "Poleiro natural pequeno",
-          },
-        },
+    const resultadoGerado = {
+      titulo: `Habitat ideal para ${nomeAve}`,
 
-        adulta: {
-          calma: {
-            gaiola: "Gaiola média para periquito",
-            brinquedo: "Balanço simples",
-            poleiro: "Poleiro de madeira",
-          },
-          ativa: {
-            gaiola: "Viveiro pequeno para periquitos",
-            brinquedo: "Escadas, argolas e balanços",
-            poleiro: "Poleiros variados",
-          },
-          curiosa: {
-            gaiola: "Habitat enriquecido para periquito",
-            brinquedo: "Brinquedos de exploração",
-            poleiro: "Poleiros naturais",
-          },
-        },
-      },
+      gaiola:
+        especie === "arara" || especie === "cacatua" || especie === "papagaio"
+          ? "Viveiro grande, resistente e com bastante espaço para movimentação."
+          : especie === "coruja"
+          ? "Recinto amplo, seguro, tranquilo e adaptado ao comportamento da espécie."
+          : "Gaiola espaçosa, segura, bem ventilada e adequada ao porte da ave.",
 
-      canario: {
-        filhote: {
-          calma: {
-            gaiola: "Gaiola segura para canário jovem",
-            brinquedo: "Acessórios simples",
-            poleiro: "Poleiro fino de madeira",
-          },
-          ativa: {
-            gaiola: "Gaiola com espaço horizontal",
-            brinquedo: "Poleiros e acessórios leves",
-            poleiro: "Poleiros em alturas diferentes",
-          },
-          curiosa: {
-            gaiola: "Gaiola com enriquecimento leve",
-            brinquedo: "Acessórios naturais",
-            poleiro: "Poleiro natural fino",
-          },
-        },
+      poleiro:
+        especie === "canario" || especie === "periquito"
+          ? "Poleiros finos de madeira natural em alturas diferentes."
+          : "Poleiros naturais de diferentes espessuras para estimular os pés.",
 
-        adulta: {
-          calma: {
-            gaiola: "Gaiola confortável para canário",
-            brinquedo: "Acessórios básicos",
-            poleiro: "Poleiro fino anatômico",
-          },
-          ativa: {
-            gaiola: "Gaiola ampla horizontal",
-            brinquedo: "Poleiros extras e acessórios leves",
-            poleiro: "Poleiros variados",
-          },
-          curiosa: {
-            gaiola: "Habitat com estímulos naturais",
-            brinquedo: "Acessórios de enriquecimento",
-            poleiro: "Poleiros naturais finos",
-          },
-        },
-      },
+      brinquedo:
+        comportamento === "ativa"
+          ? "Escadas, balanços, cordas e brinquedos para gasto de energia."
+          : comportamento === "curiosa"
+          ? "Brinquedos de forrageamento, exploração e enriquecimento ambiental."
+          : "Brinquedos leves, seguros e simples para evitar estresse.",
+
+      cuidado:
+        idade === "filhote"
+          ? "Evite excesso de estímulos e priorize segurança, adaptação e conforto."
+          : idade === "senior"
+          ? "Prefira acessos fáceis, poleiros confortáveis e ambiente mais calmo."
+          : "Mantenha uma rotina com limpeza, interação e enriquecimento diário.",
+
+      alimentacao:
+        especie === "canario"
+          ? "Mistura adequada para canários, verduras seguras e água sempre limpa."
+          : especie === "coruja"
+          ? "Alimentação específica e acompanhamento especializado."
+          : "Ração adequada para a espécie, sementes com moderação, frutas e verduras seguras.",
     };
 
-    const escolha = recomendacoes?.[especie]?.[idade]?.[comportamento];
-
-    setResultado(escolha || null);
+    setResultado(resultadoGerado);
   }
 
   return (
-    <div className="p-10">
-      <h1 className="text-4xl font-bold mb-10">
-        Monte seu Habitat
-      </h1>
+    <main className="min-h-screen bg-[#F7F1E6] px-6 py-12">
+      <section className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-[#9C7A52] font-semibold uppercase tracking-wide">
+            Monte seu Habitat
+          </p>
 
-      <div className="grid gap-6 max-w-xl">
-        <select
-          className="border p-3 rounded-lg"
-          value={especie}
-          onChange={(e) => setEspecie(e.target.value)}
-        >
-          <option value="">Escolha a espécie</option>
-          <option value="calopsita">Calopsita</option>
-          <option value="periquito">Periquito</option>
-          <option value="canario">Canário</option>
-        </select>
+          <h1 className="text-4xl font-bold text-[#9C7A52] mt-3">
+            Descubra o habitat ideal para sua ave
+          </h1>
 
-        <select
-          className="border p-3 rounded-lg"
-          value={idade}
-          onChange={(e) => setIdade(e.target.value)}
-        >
-          <option value="">Idade da ave</option>
-          <option value="filhote">Filhote</option>
-          <option value="adulta">Adulta</option>
-        </select>
+          <p className="text-[#9C7A52] mt-4 max-w-2xl mx-auto">
+            Escolha a espécie, idade e comportamento da ave para receber uma
+            sugestão personalizada de ambiente, acessórios e cuidados.
+          </p>
+        </div>
 
-        <select
-          className="border p-3 rounded-lg"
-          value={comportamento}
-          onChange={(e) => setComportamento(e.target.value)}
-        >
-          <option value="">Comportamento</option>
-          <option value="calma">Calma</option>
-          <option value="ativa">Ativa</option>
-          <option value="curiosa">Curiosa</option>
-        </select>
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-3xl shadow-md border border-[#E8D8BF] p-8">
+            <h2 className="text-2xl font-bold text-[#9C7A52] mb-6">
+              Personalize o habitat
+            </h2>
 
-        <button
-          onClick={gerarHabitat}
-          className="
-            bg-orange-500
-            text-white
-            px-6
-            py-3
-            rounded-lg
-            hover:bg-orange-600
-          "
-        >
-          Montar Habitat
-        </button>
-      </div>
+            <div className="grid gap-5">
+              <div>
+                <label className="block mb-2 font-semibold text-[#9C7A52]">
+                  Espécie da ave
+                </label>
 
-      {resultado && (
-        <div
-          className="
-            mt-12
-            border
-            rounded-xl
-            p-8
-            bg-orange-50
-            max-w-2xl
-          "
-        >
-          <h2 className="text-2xl font-bold mb-6">
-            Habitat recomendado
-          </h2>
+                <select
+                  className="w-full border border-[#D8C4A8] text-[#9C7A52] p-3 rounded-xl outline-none focus:border-[#9C7A52]"
+                  value={especie}
+                  onChange={(e) => setEspecie(e.target.value)}
+                >
+                  <option value="">Escolha a espécie</option>
+                  {especies.map((ave) => (
+                    <option key={ave.value} value={ave.value}>
+                      {ave.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <div className="space-y-4">
-            <p>
-              <strong>Gaiola:</strong> {resultado.gaiola}
-            </p>
+              <div>
+                <label className="block mb-2 font-semibold text-[#9C7A52]">
+                  Idade
+                </label>
 
-            <p>
-              <strong>Brinquedo:</strong> {resultado.brinquedo}
-            </p>
+                <select
+                  className="w-full border border-[#D8C4A8] text-[#9C7A52] p-3 rounded-xl outline-none focus:border-[#9C7A52]"
+                  value={idade}
+                  onChange={(e) => setIdade(e.target.value)}
+                >
+                  <option value="">Idade da ave</option>
+                  <option value="filhote">Filhote</option>
+                  <option value="adulta">Adulta</option>
+                  <option value="senior">Sênior</option>
+                </select>
+              </div>
 
-            <p>
-              <strong>Poleiro:</strong> {resultado.poleiro}
-            </p>
+              <div>
+                <label className="block mb-2 font-semibold text-[#9C7A52]">
+                  Comportamento
+                </label>
+
+                <select
+                  className="w-full border border-[#D8C4A8] text-[#9C7A52] p-3 rounded-xl outline-none focus:border-[#9C7A52]"
+                  value={comportamento}
+                  onChange={(e) => setComportamento(e.target.value)}
+                >
+                  <option value="">Comportamento</option>
+                  <option value="calma">Calma</option>
+                  <option value="ativa">Ativa</option>
+                  <option value="curiosa">Curiosa</option>
+                </select>
+              </div>
+
+              <button
+                onClick={gerarHabitat}
+                className="
+                  bg-[#9C7A52]
+                  text-white
+                  px-6
+                  py-3
+                  rounded-full
+                  font-semibold
+                  hover:bg-[#876645]
+                  transition
+                  mt-3
+                "
+              >
+                Montar Habitat
+              </button>
+            </div>
           </div>
         </div>
-      )}
+
+        {resultado && (
+          <div className="mt-12 bg-white rounded-3xl shadow-lg border border-[#E8D8BF] p-10">
+            <h2 className="text-3xl font-bold text-[#9C7A52] mb-8">
+              {resultado.titulo}
+            </h2>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card titulo="Gaiola ou viveiro" texto={resultado.gaiola} />
+              <Card titulo="Poleiros" texto={resultado.poleiro} />
+              <Card titulo="Brinquedos" texto={resultado.brinquedo} />
+              <Card titulo="Cuidados" texto={resultado.cuidado} />
+              <Card titulo="Alimentação" texto={resultado.alimentacao} />
+              <Card
+                titulo="Dica Calopsite"
+                texto="Combine segurança, conforto e enriquecimento ambiental para criar um espaço mais saudável para sua ave."
+              />
+            </div>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+function Card({ titulo, texto }) {
+  return (
+    <div
+      className="
+        bg-[#FFF8EE]
+        rounded-2xl
+        p-6
+        border
+        border-[#E8D8BF]
+        hover:shadow-md
+        transition
+      "
+    >
+      <h3 className="text-lg font-bold text-[#9C7A52] mb-3">{titulo}</h3>
+
+      <p className="text-[#9C7A52] leading-relaxed">{texto}</p>
     </div>
   );
 }

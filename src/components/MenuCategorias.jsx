@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 
 export default function MenuCategorias() {
-
   const menus = [
     {
       title: "Alimentação",
@@ -47,66 +46,57 @@ export default function MenuCategorias() {
   ];
 
   return (
-    <div className="flex gap-10">
-
+    <div className="flex gap-10 text-[#9C7A52]">
       {menus.map((menu) => (
-
-        <div
-          key={menu.title}
-          className="relative group"
-        >
-
+        <div key={menu.title} className="relative group">
           <Link
             to={menu.path}
-            className="hover:text-orange-600 transition"
+            className="
+              text-[#9C7A52]
+              font-medium
+              hover:text-[#7A5C34]
+              transition
+            "
           >
             {menu.title}
           </Link>
 
           {Array.isArray(menu.items) && (
-
             <div className="absolute left-0 top-full hidden group-hover:block">
-
-              <ul className="
-                mt-2
-                w-56
-                bg-white
-                border
-                rounded-md
-                shadow-lg
-                z-50
-              ">
-
+              <ul
+                className="
+                  mt-2
+                  w-56
+                  bg-white
+                  border
+                  rounded-md
+                  shadow-lg
+                  z-50
+                "
+              >
                 {menu.items.map((item) => (
-
                   <li key={item.name}>
-
                     <Link
                       to={item.path}
                       className="
                         block
                         px-4
                         py-2
-                        hover:bg-gray-100
+                        text-[#9C7A52]
+                        hover:bg-[#F5EDE0]
+                        hover:text-[#7A5C34]
+                        transition
                       "
                     >
                       {item.name}
                     </Link>
-
                   </li>
-
                 ))}
-
               </ul>
-
             </div>
-
           )}
-
         </div>
-
       ))}
-
     </div>
   );
 }
