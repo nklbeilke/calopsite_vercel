@@ -1,59 +1,59 @@
 import { Link } from "react-router-dom"
 
-import calopsita from "../assets/calopsita.png"
-import periquito from "../assets/periquito.png"
-import canario from "../assets/canario.png"
-import agapornis from "../assets/agapornis.png"
-import papagaio from "../assets/papagaio.png"
-import ringneck from "../assets/ringneck.png"
-import cacatua from "../assets/cacatua.png"
-import arara from "../assets/arara.png"
-import coruja from "../assets/coruja.png"
+import calopsitaAprenda from "../assets/calopsita_aprenda.png"
+import periquitoAprenda from "../assets/periquito_aprenda.png"
+import canarioAprenda from "../assets/canario_aprenda.png"
+import agapornisAprenda from "../assets/agapornis_aprenda.png"
+import papagaioAprenda from "../assets/papagaio_aprenda.png"
+import ringneckAprenda from "../assets/ringneck_aprenda.png"
+import cacatuaAprenda from "../assets/cacatua_aprenda.png"
+import araraAprenda from "../assets/arara_aprenda.png"
+import corujaAprenda from "../assets/coruja_aprenda.png"
 
 const aves = [
   {
     nome: "Calopsita",
-    imagem: calopsita,
+    imagem: calopsitaAprenda,
     rota: "/aprenda/aves/calopsita",
   },
   {
     nome: "Periquito",
-    imagem: periquito,
+    imagem: periquitoAprenda,
     rota: "/aprenda/aves/periquito",
   },
   {
     nome: "Canário",
-    imagem: canario,
+    imagem: canarioAprenda,
     rota: "/aprenda/aves/canario",
   },
   {
     nome: "Agapornis",
-    imagem: agapornis,
+    imagem: agapornisAprenda,
     rota: "/aprenda/aves/agapornis",
   },
   {
     nome: "Papagaio",
-    imagem: papagaio,
+    imagem: papagaioAprenda,
     rota: "/aprenda/aves/papagaio",
   },
   {
     nome: "Ring Neck",
-    imagem: ringneck,
+    imagem: ringneckAprenda,
     rota: "/aprenda/aves/ringneck",
   },
   {
     nome: "Cacatua",
-    imagem: cacatua,
+    imagem: cacatuaAprenda,
     rota: "/aprenda/aves/cacatua",
   },
   {
     nome: "Arara",
-    imagem: arara,
+    imagem: araraAprenda,
     rota: "/aprenda/aves/arara",
   },
   {
     nome: "Coruja",
-    imagem: coruja,
+    imagem: corujaAprenda,
     rota: "/aprenda/aves/coruja",
   },
 ]
