@@ -250,9 +250,6 @@ export default function Navbar() {
 
         <nav className="pb-3">
           <div className="max-w-[680px] mx-auto flex justify-between items-center">
-            <Link to="/categoria/aves" className="font-medium text-[#9C7A52] hover:text-[#7A5C34] transition">
-              Aves
-            </Link>
 
             <Link to="/categoria/alimentacao" className="font-medium text-[#9C7A52] hover:text-[#7A5C34] transition">
               Alimentação

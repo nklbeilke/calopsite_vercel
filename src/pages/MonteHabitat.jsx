@@ -67,7 +67,7 @@ export default function MonteHabitat() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F1E6] px-6 py-12">
+    <main className="min-h-screen bg-[#FFF7EA] px-6 py-12">
       <section className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <p className="text-[#9C7A52] font-semibold uppercase tracking-wide">
