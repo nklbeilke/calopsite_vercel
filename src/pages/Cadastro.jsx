@@ -1,10 +1,20 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { fetchCepData, normalizeCep } from "../utils/cep";
 import { registerUser, loginUser } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
+
+function normalizeCpf(value) {
+  return String(value || "").replace(/\D/g, "").slice(0, 11);
+}
+
+function formatCpf(digits) {
+  return digits
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
 
 export default function Cadastro() {
   const auth = useContext(AuthContext);
@@ -15,40 +25,14 @@ export default function Cadastro() {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
 
-  const [cep, setCep] = useState("");
-  const [logradouro, setLogradouro] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [uf, setUf] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [telefone, setTelefone] = useState("");
 
-  const [numero, setNumero] = useState("");
-  const [complemento, setComplemento] = useState("");
-
-  const [dataRegistro, setDataRegistro] = useState(() => new Date().toISOString().slice(0, 10));
-
-  const [loadingCep, setLoadingCep] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [mensagem, setMensagem] = useState({ type: "", text: "" });
 
-  const cepNormalized = useMemo(() => normalizeCep(cep), [cep]);
-
-  async function onBuscarCep(e) {
-    e?.preventDefault?.();
-    setMensagem({ type: "", text: "" });
-
-    try {
-      setLoadingCep(true);
-      const data = await fetchCepData(cep);
-      setLogradouro(data.logradouro);
-      setBairro(data.bairro);
-      setCidade(data.localidade);
-      setUf(data.uf);
-      setCep(data.cep);
-    } catch (err) {
-      setMensagem({ type: "error", text: err?.message || "Falha ao buscar CEP" });
-    } finally {
-      setLoadingCep(false);
-    }
+  function onCpfChange(e) {
+    setCpf(formatCpf(normalizeCpf(e.target.value)));
   }
 
   function validate() {
@@ -56,20 +40,12 @@ export default function Cadastro() {
     if (!email.trim()) return "E-mail é obrigatório";
     if (!senha) return "Senha é obrigatória";
     if (senha !== confirmarSenha) return "As senhas não conferem";
-
-    if (!cepNormalized) return "CEP inválido";
-    if (!logradouro.trim()) return "Logradouro é obrigatório (busque o CEP)";
-    if (!bairro.trim()) return "Bairro é obrigatório (busque o CEP)";
-    if (!cidade.trim()) return "Cidade é obrigatória (busque o CEP)";
-    if (!uf.trim()) return "UF é obrigatória (busque o CEP)";
-
-    if (!numero.trim()) return "Número é obrigatório";
-    if (!dataRegistro) return "Data de registro é obrigatória";
+    if (normalizeCpf(cpf).length !== 11) return "CPF inválido";
 
     return "";
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     setMensagem({ type: "", text: "" });
 
@@ -81,21 +57,15 @@ export default function Cadastro() {
 
     setEnviando(true);
     try {
-      registerUser({
-        nome: nome.trim(),
+      await registerUser({
+        nome_usuario: nome.trim(),
         email: email.trim(),
-        password: senha,
-        cep: cepNormalized,
-        logradouro: logradouro.trim(),
-        bairro: bairro.trim(),
-        cidade: cidade.trim(),
-        uf: uf.trim(),
-        numero: numero.trim(),
-        complemento: complemento.trim(),
-        createdAt: new Date(dataRegistro).toISOString(),
+        cpf: normalizeCpf(cpf),
+        senha,
+        telefone: telefone.trim() || null,
       });
 
-      const logged = loginUser(email.trim(), senha);
+      const logged = await loginUser(email.trim(), senha);
       auth?.setUser?.(logged);
       navigate("/");
     } catch (ex) {
@@ -125,7 +95,7 @@ export default function Cadastro() {
             Cadastrar usuário
           </h1>
           <p className="text-sm text-gray-500 text-center mb-8">
-            Informe seus dados, CEP e complementos para finalizar o cadastro.
+            Informe seus dados para finalizar o cadastro.
           </p>
 
           {mensagem?.text ? (
@@ -137,7 +107,6 @@ export default function Cadastro() {
 
           <form onSubmit={onSubmit} className="flex flex-col gap-5">
 
-            {/* Dados pessoais */}
             <Section title="Dados pessoais">
               <Field label="Nome">
                 <input value={nome} onChange={(e) => setNome(e.target.value)} className={inputClass} />
@@ -153,6 +122,26 @@ export default function Cadastro() {
               </Field>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="CPF">
+                  <input
+                    value={cpf}
+                    onChange={onCpfChange}
+                    placeholder="000.000.000-00"
+                    inputMode="numeric"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Telefone (opcional)">
+                  <input
+                    value={telefone}
+                    onChange={(e) => setTelefone(e.target.value)}
+                    placeholder="(00) 00000-0000"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Senha">
                   <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className={inputClass} />
                 </Field>
@@ -162,66 +151,6 @@ export default function Cadastro() {
                     value={confirmarSenha}
                     onChange={(e) => setConfirmarSenha(e.target.value)}
                     className={inputClass}
-                  />
-                </Field>
-              </div>
-            </Section>
-
-            {/* Endereço */}
-            <Section title="Endereço">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="CEP">
-                  <div className="flex gap-2">
-                    <input
-                      value={cep}
-                      onChange={(e) => setCep(e.target.value)}
-                      placeholder="00000-000"
-                      className={inputClass}
-                    />
-                    <button
-                      type="button"
-                      onClick={onBuscarCep}
-                      disabled={loadingCep}
-                      className="shrink-0 bg-[#9C7A52] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#7A5C34] transition disabled:opacity-50"
-                    >
-                      {loadingCep ? "Buscando..." : "Buscar"}
-                    </button>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1.5">O endereço será preenchido automaticamente via CEP.</p>
-                </Field>
-
-                <Field label="Data de registro">
-                  <input type="date" value={dataRegistro} onChange={(e) => setDataRegistro(e.target.value)} className={inputClass} />
-                </Field>
-              </div>
-
-              <Field label="Logradouro">
-                <input value={logradouro} onChange={(e) => setLogradouro(e.target.value)} className={inputClass} />
-              </Field>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Bairro">
-                  <input value={bairro} onChange={(e) => setBairro(e.target.value)} className={inputClass} />
-                </Field>
-                <Field label="Cidade">
-                  <input value={cidade} onChange={(e) => setCidade(e.target.value)} className={inputClass} />
-                </Field>
-              </div>
-
-              <Field label="UF">
-                <input value={uf} onChange={(e) => setUf(e.target.value)} className={inputClass} />
-              </Field>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Número">
-                  <input value={numero} onChange={(e) => setNumero(e.target.value)} className={inputClass} />
-                </Field>
-                <Field label="Complemento (opcional)">
-                  <input
-                    value={complemento}
-                    onChange={(e) => setComplemento(e.target.value)}
-                    className={inputClass}
-                    placeholder="Apto, bloco, referência..."
                   />
                 </Field>
               </div>

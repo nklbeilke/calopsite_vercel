@@ -15,13 +15,13 @@ export default function Login() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     setErro("");
     setCarregando(true);
 
     try {
-      const logged = loginUser(email, senha);
+      const logged = await loginUser(email, senha);
       auth?.setUser?.(logged);
       navigate("/");
     } catch (err) {
