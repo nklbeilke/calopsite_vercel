@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({
-    mensagem: "API do Calopsite funcionando!"
+    mensagem: "API do Calopsite funcionando! (build-check-v2)"
   });
 });
 
