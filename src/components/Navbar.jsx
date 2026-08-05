@@ -8,6 +8,7 @@ import {
   FaUser,
   FaBoxOpen,
   FaSignOutAlt,
+  FaEnvelope,
 } from "react-icons/fa";
 
 import logo from "../assets/logo.png";
@@ -24,8 +25,10 @@ export default function Navbar() {
   const [termoBusca, setTermoBusca] = useState("");
   const [mostrarResultados, setMostrarResultados] = useState(false);
   const [mostrarMenuUsuario, setMostrarMenuUsuario] = useState(false);
+  const [mostrarContato, setMostrarContato] = useState(false);
   const searchRef = useRef(null);
   const userMenuRef = useRef(null);
+  const contatoRef = useRef(null);
 
   const resultados =
     termoBusca.trim().length > 0
@@ -44,6 +47,10 @@ export default function Navbar() {
 
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setMostrarMenuUsuario(false);
+      }
+
+      if (contatoRef.current && !contatoRef.current.contains(event.target)) {
+        setMostrarContato(false);
       }
     }
 
@@ -166,14 +173,41 @@ export default function Navbar() {
         </div>
 
         <div className="flex justify-end items-center gap-3 flex-shrink-0">
-          <a
-            href="tel:+551140028922"
-            aria-label="Fale com a gente pelo telefone"
-            title="Fale com a gente"
-            className="flex items-center justify-center w-11 h-11 rounded-full bg-white text-gray-700 shadow-sm border border-orange-100 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
-          >
-            <FaPhoneAlt size={16} />
-          </a>
+          <div className="relative" ref={contatoRef}>
+            <button
+              type="button"
+              onClick={() => setMostrarContato((v) => !v)}
+              aria-label="Ver informações de contato"
+              title="Fale com a gente"
+              className="flex items-center justify-center w-11 h-11 rounded-full bg-white text-gray-700 shadow-sm border border-orange-100 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+            >
+              <FaPhoneAlt size={16} />
+            </button>
+
+            {mostrarContato && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50">
+                <p className="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  Fale com a gente
+                </p>
+
+                <a
+                  href="tel:+5541999999999"
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 transition border-t border-gray-100"
+                >
+                  <FaPhoneAlt size={13} className="text-orange-500" />
+                  (41) 9999-9999
+                </a>
+
+                <a
+                  href="mailto:piu@calopsite.shop"
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 transition border-t border-gray-100"
+                >
+                  <FaEnvelope size={13} className="text-orange-500" />
+                  piu@calopsite.shop
+                </a>
+              </div>
+            )}
+          </div>
 
           <Link
             to="/carrinho"
@@ -199,7 +233,7 @@ export default function Navbar() {
               >
                 <FaUser size={13} />
                 <span className="truncate max-w-[110px] hidden md:inline">
-                  {user.nome || user.email}
+                  {user.nome_usuario?.split(" ")[0] || user.email}
                 </span>
               </button>
 

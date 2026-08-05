@@ -1,5 +1,16 @@
+import { useContext, useState } from "react";
+import { CartContext } from "../context/CartContext";
+
 export default function ProdutoCard({ produto }) {
   const { nome, preco, imagem, descricao } = produto;
+  const cart = useContext(CartContext);
+  const [adicionado, setAdicionado] = useState(false);
+
+  function handleComprar() {
+    cart?.adicionarItem?.(produto);
+    setAdicionado(true);
+    setTimeout(() => setAdicionado(false), 1500);
+  }
 
   return (
     <div className="border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col">
@@ -25,8 +36,16 @@ export default function ProdutoCard({ produto }) {
           <span className="text-orange-600 font-bold text-lg">
             R$ {preco.toFixed(2).replace(".", ",")}
           </span>
-          <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors">
-            Comprar
+          <button
+            type="button"
+            onClick={handleComprar}
+            className={`text-sm px-3 py-1.5 rounded-lg transition-colors ${
+              adicionado
+                ? "bg-green-600 text-white"
+                : "bg-orange-500 hover:bg-orange-600 text-white"
+            }`}
+          >
+            {adicionado ? "Adicionado!" : "Comprar"}
           </button>
         </div>
       </div>
