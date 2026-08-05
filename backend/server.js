@@ -95,6 +95,98 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/pedidos", async (req, res) => {
+  const { id_usuario, itens, endereco, forma_pagamento, frete, parcelas } = req.body;
+
+  if (!id_usuario || !Array.isArray(itens) || itens.length === 0) {
+    return res.status(400).json({ erro: "Usuário e itens do pedido são obrigatórios" });
+  }
+
+  if (!endereco || !endereco.rua || !endereco.cidade || !endereco.estado || !endereco.cep) {
+    return res.status(400).json({ erro: "Endereço de entrega incompleto" });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const idsProdutos = itens.map((item) => item.id_produto);
+    const produtosResultado = await client.query(
+      "SELECT id_produto, preco FROM produtos WHERE id_produto = ANY($1::int[])",
+      [idsProdutos]
+    );
+
+    const precoPorProduto = new Map(
+      produtosResultado.rows.map((p) => [p.id_produto, Number(p.preco)])
+    );
+
+    if (precoPorProduto.size !== new Set(idsProdutos).size) {
+      throw Object.assign(new Error("Produto não encontrado"), { status: 400 });
+    }
+
+    const freteValor = Number(frete) || 0;
+    let valorTotal = freteValor;
+
+    const itensValidados = itens.map((item) => {
+      const quantidade = Number(item.quantidade);
+      if (!Number.isInteger(quantidade) || quantidade < 1) {
+        throw Object.assign(new Error("Quantidade inválida"), { status: 400 });
+      }
+
+      const preco = precoPorProduto.get(item.id_produto);
+      valorTotal += preco * quantidade;
+
+      return { id_produto: item.id_produto, quantidade, preco_unitario: preco };
+    });
+
+    const pedidoResultado = await client.query(
+      `INSERT INTO pedidos (id_usuario, valor_total, frete, forma_pagamento, parcelas, endereco)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id_pedido, status, data_pedido`,
+      [
+        id_usuario,
+        valorTotal,
+        freteValor,
+        forma_pagamento || "pix",
+        Number(parcelas) || 1,
+        JSON.stringify(endereco),
+      ]
+    );
+
+    const pedido = pedidoResultado.rows[0];
+
+    for (const item of itensValidados) {
+      await client.query(
+        `INSERT INTO itens_pedido (id_pedido, id_produto, quantidade, preco_unitario)
+         VALUES ($1, $2, $3, $4)`,
+        [pedido.id_pedido, item.id_produto, item.quantidade, item.preco_unitario]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    res.status(201).json({
+      id_pedido: pedido.id_pedido,
+      status: pedido.status,
+      data_pedido: pedido.data_pedido,
+      valor_total: valorTotal,
+      itens: itensValidados,
+    });
+  } catch (erro) {
+    await client.query("ROLLBACK");
+
+    if (erro.status) {
+      return res.status(erro.status).json({ erro: erro.message });
+    }
+
+    console.error("Erro ao criar pedido:", erro.message);
+    res.status(500).json({ erro: "Erro ao criar pedido" });
+  } finally {
+    client.release();
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 
 pool.query("SELECT NOW()")
