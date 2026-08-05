@@ -7,6 +7,7 @@ import Produtos from "./pages/Produtos";
 import MonteHabitat from "./pages/MonteHabitat";
 import Carrinho from "./pages/Carrinho";
 import Checkout from "./pages/Checkout";
+import MeusPedidos from "./pages/MeusPedidos";
 
 import Aprenda from "./pages/Aprenda";
 import AprendaAves from "./pages/AprendaAves";
@@ -71,6 +72,10 @@ export default function App() {
         <Route
           path="/checkout"
           element={<Checkout />}
+        />
+        <Route
+          path="/meus-pedidos"
+          element={<MeusPedidos />}
         />
         <Route
           path="/aprenda/aves/calopsita"

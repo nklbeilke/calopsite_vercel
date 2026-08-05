@@ -4,18 +4,19 @@ const ESPECIES = [
   { valor: "", label: "Todas as espécies" },
   { valor: "calopsita", label: "Calopsita" },
   { valor: "periquito", label: "Periquito" },
-  { valor: "agapornis", label: "Agapornis" },
-  { valor: "ringneck", label: "Ring Neck" },
   { valor: "canario", label: "Canário" },
+  { valor: "agapornis", label: "Agapornis" },
   { valor: "papagaio", label: "Papagaio" },
-  { valor: "ave-de-rapina", label: "Aves de Rapina" },
+  { valor: "ringneck", label: "Ring Neck" },
+  { valor: "cacatua", label: "Cacatua" },
+  { valor: "arara", label: "Arara" },
+  { valor: "coruja", label: "Coruja" },
 ];
 
 const ORDENACOES = [
   { valor: "relevancia", label: "Mais relevantes" },
   { valor: "menor-preco", label: "Menor preço" },
   { valor: "maior-preco", label: "Maior preço" },
-  { valor: "melhor-avaliados", label: "Melhor avaliados" },
   { valor: "nome", label: "Nome (A-Z)" },
 ];
 

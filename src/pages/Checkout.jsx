@@ -71,8 +71,7 @@ export default function Checkout() {
     return (
       <main className="bg-[#F7F3EE] min-h-screen flex items-center justify-center px-4 py-16">
         <div className="max-w-md text-center bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-8">
-          <div className="text-5xl mb-4">🎉</div>
-          <h1 className="text-2xl font-bold text-[#2C2016] mb-2">Pedido confirmado!</h1>
+          <h1 className="text-2xl font-bold text-[#2C2016] mb-2">Pedido confirmado</h1>
           <p className="text-gray-500 mb-1">
             Pedido nº <strong>{pedidoConfirmado.id_pedido}</strong> — total de{" "}
             R$ {pedidoConfirmado.valor_total.toFixed(2).replace(".", ",")}

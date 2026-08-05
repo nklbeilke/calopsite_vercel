@@ -13,3 +13,13 @@ export async function criarPedido(pedido) {
   }
   return data;
 }
+
+export async function listarPedidos(idUsuario) {
+  const res = await fetch(`${API_URL}/usuarios/${idUsuario}/pedidos`);
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.erro || "Erro ao buscar pedidos");
+  }
+  return data;
+}

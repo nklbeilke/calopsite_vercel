@@ -31,6 +31,30 @@ app.get("/produtos", async (req, res) => {
   }
 });
 
+app.get("/produtos/mais-vendidos", async (req, res) => {
+  const limite = Number(req.query.limite) || 5;
+
+  try {
+    const resultado = await pool.query(
+      `SELECT p.id_produto, COALESCE(v.total_vendido, 0) AS total_vendido
+       FROM produtos p
+       LEFT JOIN (
+         SELECT id_produto, SUM(quantidade) AS total_vendido
+         FROM itens_pedido
+         GROUP BY id_produto
+       ) v ON v.id_produto = p.id_produto
+       ORDER BY total_vendido DESC, p.id_produto ASC
+       LIMIT $1`,
+      [limite]
+    );
+
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error("Erro ao buscar mais vendidos:", erro.message);
+    res.status(500).json({ erro: "Erro ao buscar mais vendidos" });
+  }
+});
+
 app.post("/usuarios", async (req, res) => {
   const { nome_usuario, email, cpf, senha, telefone } = req.body;
 
@@ -92,6 +116,47 @@ app.post("/login", async (req, res) => {
   } catch (erro) {
     console.error("Erro ao fazer login:", erro.message);
     res.status(500).json({ erro: "Erro ao fazer login" });
+  }
+});
+
+app.get("/usuarios/:id_usuario/pedidos", async (req, res) => {
+  const { id_usuario } = req.params;
+
+  try {
+    const resultado = await pool.query(
+      `SELECT
+         p.id_pedido,
+         p.status,
+         p.valor_total,
+         p.frete,
+         p.forma_pagamento,
+         p.parcelas,
+         p.endereco,
+         p.data_pedido,
+         COALESCE(
+           json_agg(
+             json_build_object(
+               'id_produto', ip.id_produto,
+               'nome_produto', pr.nome_produto,
+               'quantidade', ip.quantidade,
+               'preco_unitario', ip.preco_unitario
+             ) ORDER BY ip.id_item
+           ) FILTER (WHERE ip.id_item IS NOT NULL),
+           '[]'
+         ) AS itens
+       FROM pedidos p
+       LEFT JOIN itens_pedido ip ON ip.id_pedido = p.id_pedido
+       LEFT JOIN produtos pr ON pr.id_produto = ip.id_produto
+       WHERE p.id_usuario = $1
+       GROUP BY p.id_pedido
+       ORDER BY p.data_pedido DESC`,
+      [id_usuario]
+    );
+
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error("Erro ao buscar pedidos:", erro.message);
+    res.status(500).json({ erro: "Erro ao buscar pedidos" });
   }
 });
 
