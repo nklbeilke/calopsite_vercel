@@ -82,7 +82,7 @@ export default function Navbar() {
       <div className="flex items-center px-8 py-5 gap-4">
         <div className="w-[200px] md:w-[280px] flex-shrink-0">
           <Link to="/" aria-label="Ir para a Home">
-            <img src={logo} alt="Logo Calopsite" className="w-28 h-auto" />
+            <img src={logo} alt="Logo Calopsite" className="w-40 h-auto" />
           </Link>
         </div>
 

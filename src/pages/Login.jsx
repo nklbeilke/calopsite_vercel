@@ -38,7 +38,7 @@ export default function Login() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Link to="/">
-            <img src={logo} alt="Logo Calopsite" className="w-20 h-auto" />
+            <img src={logo} alt="Logo Calopsite" className="w-32 h-auto" />
           </Link>
         </div>
 
