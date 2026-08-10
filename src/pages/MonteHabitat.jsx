@@ -1,4 +1,27 @@
 import { useState } from "react";
+import produtos from "../data/Produtos";
+import ProdutoCard from "../components/ProdutoCard";
+
+const PRIORIDADE_ENRIQUECIMENTO = {
+  ativa: ["escadas", "balancos", "brinquedos"],
+  curiosa: ["brinquedos", "escadas", "balancos"],
+  calma: ["balancos", "brinquedos", "escadas"],
+};
+
+function produtosDoTipo(subcategoria, especie, limite = 2) {
+  return produtos
+    .filter((p) => p.subcategoria === subcategoria && p.especies?.includes(especie))
+    .slice(0, limite);
+}
+
+function produtosDeEnriquecimento(especie, comportamento, limite = 3) {
+  const ordem = PRIORIDADE_ENRIQUECIMENTO[comportamento] || PRIORIDADE_ENRIQUECIMENTO.calma;
+
+  return produtos
+    .filter((p) => p.categoria === "enriquecimento" && p.especies?.includes(especie))
+    .sort((a, b) => ordem.indexOf(a.subcategoria) - ordem.indexOf(b.subcategoria))
+    .slice(0, limite);
+}
 
 export default function MonteHabitat() {
   const [especie, setEspecie] = useState("");
@@ -29,38 +52,67 @@ export default function MonteHabitat() {
     const resultadoGerado = {
       titulo: `Habitat ideal para ${nomeAve}`,
 
-      gaiola:
-        especie === "arara" || especie === "cacatua" || especie === "papagaio"
-          ? "Viveiro grande, resistente e com bastante espaço para movimentação."
-          : especie === "coruja"
-          ? "Recinto amplo, seguro, tranquilo e adaptado ao comportamento da espécie."
-          : "Gaiola espaçosa, segura, bem ventilada e adequada ao porte da ave.",
+      gaiola: {
+        texto:
+          especie === "arara" || especie === "cacatua" || especie === "papagaio"
+            ? "Viveiro grande, resistente e com bastante espaço para movimentação."
+            : especie === "coruja"
+            ? "Recinto amplo, seguro, tranquilo e adaptado ao comportamento da espécie."
+            : "Gaiola espaçosa, segura, bem ventilada e adequada ao porte da ave.",
+        produtos: produtosDoTipo("gaiolas", especie),
+      },
 
-      poleiro:
-        especie === "canario" || especie === "periquito"
-          ? "Poleiros finos de madeira natural em alturas diferentes."
-          : "Poleiros naturais de diferentes espessuras para estimular os pés.",
+      poleiro: {
+        texto:
+          especie === "canario" || especie === "periquito"
+            ? "Poleiros finos de madeira natural em alturas diferentes."
+            : "Poleiros naturais de diferentes espessuras para estimular os pés.",
+        produtos: produtosDoTipo("poleiros", especie),
+      },
 
-      brinquedo:
-        comportamento === "ativa"
-          ? "Escadas, balanços, cordas e brinquedos para gasto de energia."
-          : comportamento === "curiosa"
-          ? "Brinquedos de forrageamento, exploração e enriquecimento ambiental."
-          : "Brinquedos leves, seguros e simples para evitar estresse.",
+      ninho: {
+        texto:
+          especie === "coruja"
+            ? "Um tronco ou ninho escuro e tranquilo é essencial para o descanso diurno da coruja."
+            : "Um ninho ou toca aconchegante ajuda a ave a se sentir segura para descansar e dormir.",
+        produtos: produtosDoTipo("ninhos", especie),
+      },
 
-      cuidado:
-        idade === "filhote"
-          ? "Evite excesso de estímulos e priorize segurança, adaptação e conforto."
-          : idade === "senior"
-          ? "Prefira acessos fáceis, poleiros confortáveis e ambiente mais calmo."
-          : "Mantenha uma rotina com limpeza, interação e enriquecimento diário.",
+      brinquedo: {
+        texto:
+          comportamento === "ativa"
+            ? "Escadas, balanços, cordas e brinquedos para gasto de energia."
+            : comportamento === "curiosa"
+            ? "Brinquedos de forrageamento, exploração e enriquecimento ambiental."
+            : "Brinquedos leves, seguros e simples para evitar estresse.",
+        produtos: produtosDeEnriquecimento(especie, comportamento),
+      },
 
-      alimentacao:
-        especie === "canario"
-          ? "Mistura adequada para canários, verduras seguras e água sempre limpa."
-          : especie === "coruja"
-          ? "Alimentação específica e acompanhamento especializado."
-          : "Ração adequada para a espécie, sementes com moderação, frutas e verduras seguras.",
+      acessorio: {
+        texto: "Comedouros, bebedouros e banheiras adequados facilitam a rotina de cuidados e higiene diária.",
+        produtos: produtosDoTipo("acessorios", especie),
+      },
+
+      cuidado: {
+        texto:
+          idade === "filhote"
+            ? "Evite excesso de estímulos e priorize segurança, adaptação e conforto."
+            : idade === "senior"
+            ? "Prefira acessos fáceis, poleiros confortáveis e ambiente mais calmo."
+            : "Mantenha uma rotina com limpeza, interação e enriquecimento diário.",
+      },
+
+      alimentacao: {
+        texto:
+          especie === "canario"
+            ? "Mistura adequada para canários, verduras seguras e água sempre limpa."
+            : especie === "coruja"
+            ? "Alimentação específica e acompanhamento especializado."
+            : "Ração adequada para a espécie, sementes com moderação, frutas e verduras seguras.",
+        produtos: produtos
+          .filter((p) => p.categoria === "alimentacao" && p.especies?.includes(especie))
+          .slice(0, 2),
+      },
     };
 
     setResultado(resultadoGerado);
@@ -170,21 +222,47 @@ export default function MonteHabitat() {
               {resultado.titulo}
             </h2>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card titulo="Gaiola ou viveiro" texto={resultado.gaiola} />
-              <Card titulo="Poleiros" texto={resultado.poleiro} />
-              <Card titulo="Brinquedos" texto={resultado.brinquedo} />
-              <Card titulo="Cuidados" texto={resultado.cuidado} />
-              <Card titulo="Alimentação" texto={resultado.alimentacao} />
-              <Card
-                titulo="Dica Calopsite"
-                texto="Combine segurança, conforto e enriquecimento ambiental para criar um espaço mais saudável para sua ave."
-              />
+            <div className="flex flex-col gap-8">
+              <Secao titulo="Gaiola ou viveiro" bloco={resultado.gaiola} />
+              <Secao titulo="Poleiros" bloco={resultado.poleiro} />
+              <Secao titulo="Ninho e descanso" bloco={resultado.ninho} />
+              <Secao titulo="Brinquedos e enriquecimento" bloco={resultado.brinquedo} />
+              <Secao titulo="Acessórios" bloco={resultado.acessorio} />
+              <Secao titulo="Alimentação" bloco={resultado.alimentacao} />
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card titulo="Cuidados" texto={resultado.cuidado.texto} />
+                <Card
+                  titulo="Dica Calopsite"
+                  texto="Combine segurança, conforto e enriquecimento ambiental para criar um espaço mais saudável para sua ave."
+                />
+              </div>
             </div>
           </div>
         )}
       </section>
     </main>
+  );
+}
+
+function Secao({ titulo, bloco }) {
+  return (
+    <div className="bg-[#FFF8EE] rounded-2xl p-6 border border-[#E8D8BF]">
+      <h3 className="text-lg font-bold text-[#9C7A52] mb-3">{titulo}</h3>
+      <p className="text-[#9C7A52] leading-relaxed mb-5">{bloco.texto}</p>
+
+      {bloco.produtos && bloco.produtos.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {bloco.produtos.map((produto) => (
+            <ProdutoCard key={produto.id} produto={produto} />
+          ))}
+        </div>
+      ) : bloco.produtos ? (
+        <p className="text-sm text-[#9C7A52]/70 italic">
+          Ainda não temos produtos cadastrados nesta categoria para essa espécie.
+        </p>
+      ) : null}
+    </div>
   );
 }
 

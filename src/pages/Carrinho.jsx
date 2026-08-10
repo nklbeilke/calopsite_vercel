@@ -12,7 +12,7 @@ export default function Carrinho() {
 
   if (itens.length === 0) {
     return (
-      <main className="bg-[#F7F3EE] min-h-screen px-4 py-16">
+      <main className="bg-[#FFF7EA] min-h-screen px-4 py-16">
         <div className="max-w-2xl mx-auto text-center">
           <FaShoppingCart className="mx-auto text-5xl text-[#C9B8A3] mb-4" />
           <h1 className="text-3xl font-bold text-[#2C2016] mb-2">Seu carrinho está vazio</h1>
@@ -31,7 +31,7 @@ export default function Carrinho() {
   }
 
   return (
-    <main className="bg-[#F7F3EE] min-h-screen px-4 py-10">
+    <main className="bg-[#FFF7EA] min-h-screen px-4 py-10">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-[#2C2016] mb-8">Meu Carrinho</h1>
 

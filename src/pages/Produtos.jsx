@@ -1,26 +1,63 @@
 import { useParams } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import produtos from "../data/Produtos";
 import ProdutoCard from "../components/ProdutoCard";
 import FiltrosProdutos from "../components/FiltrosProdutos";
 
+const nomesCategorias = {
+  alimentacao: "Alimentação",
+  habitat: "Habitat",
+  enriquecimento: "Enriquecimento",
+};
+
+const nomesSubcategorias = {
+  racoes: "Rações",
+  sementes: "Sementes",
+  petiscos: "Petiscos",
+  gaiolas: "Gaiolas",
+  poleiros: "Poleiros",
+  ninhos: "Ninhos",
+  acessorios: "Acessórios",
+  brinquedos: "Brinquedos",
+  escadas: "Escadas",
+  balancos: "Balanços",
+};
+
 export default function Produtos() {
-  const { categoria, subcategoria } = useParams();
+  const { categoria, subcategoria: subcategoriaUrl } = useParams();
+
+  const [subcategoria, setSubcategoria] = useState(subcategoriaUrl || "");
+
+  useEffect(() => {
+    setSubcategoria(subcategoriaUrl || "");
+  }, [categoria, subcategoriaUrl]);
 
   const produtosDaCategoria = produtos.filter((p) => {
-    if (subcategoria) {
-      return p.categoria === categoria && p.subcategoria === subcategoria;
-    }
     if (categoria) {
       return p.categoria === categoria;
     }
     return true;
   });
 
-  const precoMaximoDisponivel = useMemo(() => {
-    const maior = Math.max(0, ...produtosDaCategoria.map((p) => p.preco));
-    return Math.ceil(maior / 5) * 5 || 100;
+  const opcoesSubcategoria = useMemo(() => {
+    const vistas = new Set();
+    return produtosDaCategoria.reduce((acc, p) => {
+      if (!vistas.has(p.subcategoria)) {
+        vistas.add(p.subcategoria);
+        acc.push({ valor: p.subcategoria, label: nomesSubcategorias[p.subcategoria] || p.subcategoria });
+      }
+      return acc;
+    }, []);
   }, [produtosDaCategoria]);
+
+  const produtosDaSubcategoria = produtosDaCategoria.filter((p) =>
+    subcategoria ? p.subcategoria === subcategoria : true
+  );
+
+  const precoMaximoDisponivel = useMemo(() => {
+    const maior = Math.max(0, ...produtosDaSubcategoria.map((p) => p.preco));
+    return Math.ceil(maior / 5) * 5 || 100;
+  }, [produtosDaSubcategoria]);
 
   const [especie, setEspecie] = useState("");
   const [precoMax, setPrecoMax] = useState(precoMaximoDisponivel);
@@ -28,7 +65,7 @@ export default function Produtos() {
 
   const precoMaxAtivo = precoMax > precoMaximoDisponivel ? precoMaximoDisponivel : precoMax;
 
-  const produtosFiltrados = produtosDaCategoria
+  const produtosFiltrados = produtosDaSubcategoria
     .filter((p) => (especie ? p.especies?.includes(especie) : true))
     .filter((p) => p.preco <= precoMaxAtivo)
     .sort((a, b) => {
@@ -37,24 +74,6 @@ export default function Produtos() {
       if (ordenacao === "nome") return a.nome.localeCompare(b.nome);
       return 0;
     });
-
-  const nomesCategorias = {
-    alimentacao: "Alimentação",
-    habitat: "Habitat",
-    enriquecimento: "Enriquecimento",
-  };
-
-  const nomesSubcategorias = {
-    racoes: "Rações",
-    sementes: "Sementes",
-    petiscos: "Petiscos",
-    gaiolas: "Gaiolas",
-    poleiros: "Poleiros",
-    ninhos: "Ninhos",
-    brinquedos: "Brinquedos",
-    escadas: "Escadas",
-    balancos: "Balanços",
-  };
 
   const titulo = subcategoria
     ? nomesSubcategorias[subcategoria] || subcategoria
@@ -78,6 +97,9 @@ export default function Produtos() {
           ordenacao={ordenacao}
           setOrdenacao={setOrdenacao}
           precoMaximoDisponivel={precoMaximoDisponivel}
+          subcategoria={subcategoria}
+          setSubcategoria={setSubcategoria}
+          opcoesSubcategoria={opcoesSubcategoria}
         />
 
         {produtosFiltrados.length === 0 ? (

@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import CookieConsent from "./components/CookieConsent";
 
 import Home from "./pages/Home";
 import Produtos from "./pages/Produtos";
@@ -117,6 +119,9 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
       </Routes>
+
+      <Footer />
+      <CookieConsent />
 
     </div>
   );

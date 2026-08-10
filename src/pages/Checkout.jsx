@@ -1,15 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
+import { FaCheck, FaRegCopy } from "react-icons/fa";
 
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
 import { criarPedido } from "../utils/pedidos";
-
-const FORMAS_PAGAMENTO = [
-  { value: "pix", label: "Pix" },
-  { value: "cartao_entrega", label: "Cartão na entrega" },
-  { value: "dinheiro_entrega", label: "Dinheiro na entrega" },
-];
 
 function normalizeCep(value) {
   return String(value || "").replace(/\D/g, "").slice(0, 8);
@@ -17,6 +13,14 @@ function normalizeCep(value) {
 
 function formatCep(digits) {
   return digits.replace(/(\d{5})(\d)/, "$1-$2");
+}
+
+function gerarCodigoPixSimulado(valor) {
+  const txid = Math.random().toString(36).slice(2, 10).toUpperCase();
+  return (
+    `00020126ambientedeteste0014BR.GOV.BCB.PIX0111calopsite.shop` +
+    `5204000053039865406${valor.toFixed(2)}5802BR5913CALOPSITE${txid}`
+  );
 }
 
 export default function Checkout() {
@@ -34,11 +38,55 @@ export default function Checkout() {
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
   const [cep, setCep] = useState("");
-  const [formaPagamento, setFormaPagamento] = useState(FORMAS_PAGAMENTO[0].value);
+
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const [erroCep, setErroCep] = useState("");
 
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
   const [pedidoConfirmado, setPedidoConfirmado] = useState(null);
+
+  const [pixGerado, setPixGerado] = useState(false);
+  const [codigoPix, setCodigoPix] = useState("");
+  const [copiado, setCopiado] = useState(false);
+
+  useEffect(() => {
+    const cepLimpo = normalizeCep(cep);
+    if (cepLimpo.length !== 8) {
+      setErroCep("");
+      return;
+    }
+
+    let cancelado = false;
+    setBuscandoCep(true);
+    setErroCep("");
+
+    fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+      .then((res) => res.json())
+      .then((dados) => {
+        if (cancelado) return;
+
+        if (dados.erro) {
+          setErroCep("CEP não encontrado");
+          return;
+        }
+
+        setRua(dados.logradouro || "");
+        setBairro(dados.bairro || "");
+        setCidade(dados.localidade || "");
+        setEstado(dados.uf || "");
+      })
+      .catch(() => {
+        if (!cancelado) setErroCep("Não foi possível buscar o CEP");
+      })
+      .finally(() => {
+        if (!cancelado) setBuscandoCep(false);
+      });
+
+    return () => {
+      cancelado = true;
+    };
+  }, [cep]);
 
   if (!user) {
     return (
@@ -77,7 +125,7 @@ export default function Checkout() {
             R$ {pedidoConfirmado.valor_total.toFixed(2).replace(".", ",")}
           </p>
           <p className="text-gray-500 mb-6">
-            Vamos entrar em contato por telefone para combinar o pagamento e a entrega.
+            Pagamento via Pix confirmado. Vamos preparar seu pedido para envio.
           </p>
           <Link
             to="/"
@@ -117,7 +165,7 @@ export default function Checkout() {
     return "";
   }
 
-  async function onSubmit(e) {
+  function onGerarPix(e) {
     e.preventDefault();
     setErro("");
 
@@ -127,6 +175,18 @@ export default function Checkout() {
       return;
     }
 
+    setCodigoPix(gerarCodigoPixSimulado(cart.totalPreco));
+    setPixGerado(true);
+  }
+
+  function onCopiarCodigo() {
+    navigator.clipboard?.writeText(codigoPix);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  }
+
+  async function onConfirmarPagamento() {
+    setErro("");
     setEnviando(true);
     try {
       const pedido = await criarPedido({
@@ -144,7 +204,7 @@ export default function Checkout() {
           estado: estado.trim().toUpperCase(),
           cep: normalizeCep(cep),
         },
-        forma_pagamento: formaPagamento,
+        forma_pagamento: "pix",
         frete: 0,
         parcelas: 1,
       });
@@ -163,7 +223,7 @@ export default function Checkout() {
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-[#2C2016] mb-8">Finalizar Compra</h1>
 
-        <form onSubmit={onSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <form onSubmit={onGerarPix} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-6">
               <h2 className="text-[11px] font-medium tracking-wider uppercase text-[#7A5C34] bg-[#F5EDE0] inline-block w-fit px-2.5 py-1 rounded mb-4">
@@ -177,30 +237,48 @@ export default function Checkout() {
                 </div>
               ) : null}
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Campo label="CEP">
+                  <input
+                    value={formatCep(normalizeCep(cep))}
+                    onChange={(e) => setCep(e.target.value)}
+                    placeholder="00000-000"
+                    inputMode="numeric"
+                    className={inputClass}
+                    disabled={pixGerado}
+                  />
+                  {buscandoCep ? (
+                    <p className="text-xs text-gray-400 mt-1.5">Buscando endereço...</p>
+                  ) : erroCep ? (
+                    <p className="text-xs text-[#8A2C26] mt-1.5">{erroCep}</p>
+                  ) : null}
+                </Campo>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                 <div className="sm:col-span-2">
                   <Campo label="Rua">
-                    <input value={rua} onChange={(e) => setRua(e.target.value)} className={inputClass} />
+                    <input value={rua} onChange={(e) => setRua(e.target.value)} className={inputClass} disabled={pixGerado} />
                   </Campo>
                 </div>
                 <Campo label="Número">
-                  <input value={numero} onChange={(e) => setNumero(e.target.value)} className={inputClass} />
+                  <input value={numero} onChange={(e) => setNumero(e.target.value)} className={inputClass} disabled={pixGerado} />
                 </Campo>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 <Campo label="Complemento (opcional)">
-                  <input value={complemento} onChange={(e) => setComplemento(e.target.value)} className={inputClass} />
+                  <input value={complemento} onChange={(e) => setComplemento(e.target.value)} className={inputClass} disabled={pixGerado} />
                 </Campo>
                 <Campo label="Bairro">
-                  <input value={bairro} onChange={(e) => setBairro(e.target.value)} className={inputClass} />
+                  <input value={bairro} onChange={(e) => setBairro(e.target.value)} className={inputClass} disabled={pixGerado} />
                 </Campo>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                 <div className="sm:col-span-2">
                   <Campo label="Cidade">
-                    <input value={cidade} onChange={(e) => setCidade(e.target.value)} className={inputClass} />
+                    <input value={cidade} onChange={(e) => setCidade(e.target.value)} className={inputClass} disabled={pixGerado} />
                   </Campo>
                 </div>
                 <Campo label="Estado (UF)">
@@ -209,18 +287,7 @@ export default function Checkout() {
                     onChange={(e) => setEstado(e.target.value.slice(0, 2))}
                     placeholder="PR"
                     className={inputClass}
-                  />
-                </Campo>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                <Campo label="CEP">
-                  <input
-                    value={formatCep(normalizeCep(cep))}
-                    onChange={(e) => setCep(e.target.value)}
-                    placeholder="00000-000"
-                    inputMode="numeric"
-                    className={inputClass}
+                    disabled={pixGerado}
                   />
                 </Campo>
               </div>
@@ -228,34 +295,52 @@ export default function Checkout() {
 
             <div className="bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-6">
               <h2 className="text-[11px] font-medium tracking-wider uppercase text-[#7A5C34] bg-[#F5EDE0] inline-block w-fit px-2.5 py-1 rounded mb-4">
-                Forma de pagamento
+                Pagamento via Pix
               </h2>
 
-              <div className="flex flex-col gap-3">
-                {FORMAS_PAGAMENTO.map((forma) => (
-                  <label
-                    key={forma.value}
-                    className={`flex items-center gap-3 border rounded-xl px-4 py-3 cursor-pointer transition ${
-                      formaPagamento === forma.value
-                        ? "border-orange-400 bg-orange-50"
-                        : "border-[#E0D5C8]"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="forma_pagamento"
-                      value={forma.value}
-                      checked={formaPagamento === forma.value}
-                      onChange={(e) => setFormaPagamento(e.target.value)}
-                    />
-                    <span className="text-sm text-[#2C2016]">{forma.label}</span>
-                  </label>
-                ))}
-              </div>
+              {!pixGerado ? (
+                <p className="text-sm text-gray-500">
+                  Preencha o endereço e clique em "Gerar QR Code Pix" para continuar.
+                </p>
+              ) : (
+                <div className="flex flex-col items-center text-center">
+                  <div className="bg-white p-3 rounded-xl border border-[#E0D5C8] mb-4">
+                    <QRCodeSVG value={codigoPix} size={180} />
+                  </div>
 
-              <p className="text-xs text-gray-400 mt-4">
-                O pagamento é combinado diretamente com a gente no momento da entrega.
-              </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Escaneie o QR Code no app do seu banco ou copie o código abaixo.
+                  </p>
+
+                  <div className="w-full flex items-stretch gap-2 mb-2">
+                    <input
+                      readOnly
+                      value={codigoPix}
+                      className="flex-1 min-w-0 rounded-xl border border-[#E0D5C8] bg-[#FAF7F2] px-3 py-2.5 text-xs text-[#2C2016] truncate"
+                    />
+                    <button
+                      type="button"
+                      onClick={onCopiarCodigo}
+                      className="flex items-center gap-1.5 bg-[#F5EDE0] hover:bg-[#E8D8BF] text-[#7A5C34] text-xs font-semibold px-4 rounded-xl transition"
+                    >
+                      {copiado ? <FaCheck size={12} /> : <FaRegCopy size={12} />}
+                      {copiado ? "Copiado" : "Copiar"}
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-gray-400 mb-2">
+                    Pagamento simulado — ambiente de testes, nenhuma cobrança real é feita.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setPixGerado(false)}
+                    className="text-xs text-[#7A5C34] font-medium hover:underline"
+                  >
+                    Editar endereço
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -284,13 +369,23 @@ export default function Checkout() {
               </span>
             </div>
 
-            <button
-              type="submit"
-              disabled={enviando}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
-            >
-              {enviando ? "Enviando pedido..." : "Confirmar pedido"}
-            </button>
+            {!pixGerado ? (
+              <button
+                type="submit"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition"
+              >
+                Gerar QR Code Pix
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onConfirmarPagamento}
+                disabled={enviando}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
+              >
+                {enviando ? "Confirmando..." : "Já paguei, confirmar pedido"}
+              </button>
+            )}
 
             <Link
               to="/carrinho"

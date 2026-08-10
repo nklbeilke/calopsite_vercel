@@ -199,7 +199,7 @@ export default function Navbar() {
                 </a>
 
                 <a
-                  href="mailto:piu@calopsite.shop"
+                  href="mailto:contato@calopsite.shop"
                   className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 transition border-t border-gray-100"
                 >
                   <FaEnvelope size={13} className="text-orange-500" />

@@ -19,6 +19,7 @@ export default function MenuCategorias() {
         { name: "Gaiolas", path: "/categoria/habitat/gaiolas" },
         { name: "Poleiros", path: "/categoria/habitat/poleiros" },
         { name: "Ninhos", path: "/categoria/habitat/ninhos" },
+        { name: "Acessórios", path: "/categoria/habitat/acessorios" },
       ],
     },
 

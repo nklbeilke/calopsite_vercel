@@ -44,7 +44,7 @@ export default function AprendaMeioAmbiente() {
   ];
 
   return (
-    <main className="bg-[#F7F3EE] min-h-screen py-12 px-4">
+    <main className="bg-[#FFF7EA] min-h-screen py-12 px-4">
       {/* Hero */}
       <section className="max-w-[1100px] mx-auto text-center mb-12">
         <p className="text-sm uppercase tracking-[0.25em] text-[#9C7A52] mb-3">

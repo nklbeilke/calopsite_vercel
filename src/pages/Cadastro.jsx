@@ -76,7 +76,7 @@ export default function Cadastro() {
   }
 
   return (
-    <main className="bg-[#F7F3EE] min-h-screen flex items-center justify-center px-4 py-12">
+    <main className="bg-[#FFF7EA] min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-2xl">
 
         {/* Logo */}

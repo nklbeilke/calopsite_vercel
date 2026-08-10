@@ -28,9 +28,46 @@ export default function FiltrosProdutos({
   ordenacao,
   setOrdenacao,
   precoMaximoDisponivel,
+  subcategoria,
+  setSubcategoria,
+  opcoesSubcategoria,
 }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-6">
+      {/* SUBCATEGORIA */}
+      {opcoesSubcategoria && opcoesSubcategoria.length > 1 && (
+        <div>
+          <h3 className="font-semibold text-gray-800 text-sm mb-3">Tipo</h3>
+          <div className="flex flex-col gap-1.5">
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-orange-600 transition">
+              <input
+                type="radio"
+                name="subcategoria"
+                checked={subcategoria === ""}
+                onChange={() => setSubcategoria("")}
+                className="accent-orange-500"
+              />
+              Todos
+            </label>
+            {opcoesSubcategoria.map((opcao) => (
+              <label
+                key={opcao.valor}
+                className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-orange-600 transition"
+              >
+                <input
+                  type="radio"
+                  name="subcategoria"
+                  checked={subcategoria === opcao.valor}
+                  onChange={() => setSubcategoria(opcao.valor)}
+                  className="accent-orange-500"
+                />
+                {opcao.label}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ESPÉCIE */}
       <div>
         <h3 className="font-semibold text-gray-800 text-sm mb-3">Espécie</h3>
