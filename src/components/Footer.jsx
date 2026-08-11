@@ -15,7 +15,7 @@ export default function Footer() {
     <footer className="bg-[#EAE2D3] text-[#6B5636] mt-16">
       <div className="max-w-[1400px] mx-auto px-8 py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         <div>
-          <img src={logo} alt="Logo Calopsite" className="w-24 h-auto mb-4" />
+          <img src={logo} alt="Logo Calopsite" className="w-36 h-auto mb-4" />
           <p className="text-sm text-[#6B5636] leading-relaxed">
             Bem-estar, cuidado e enriquecimento para sua ave.
           </p>
