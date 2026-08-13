@@ -14,11 +14,11 @@ export default function ProdutoCard({ produto }) {
 
   return (
     <div className="border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col">
-      <div className="h-48 bg-gray-100 overflow-hidden">
+      <div className="h-56 bg-gray-100 overflow-hidden flex items-center justify-center">
         <img
           src={imagem}
           alt={nome}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
           onError={(e) => {
             e.target.src = "https://placehold.co/300x200?text=Produto";
           }}

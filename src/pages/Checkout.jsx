@@ -90,7 +90,7 @@ export default function Checkout() {
 
   if (!user) {
     return (
-      <main className="bg-[#F7F3EE] min-h-screen flex items-center justify-center px-4 py-16">
+      <main className="bg-[#FFF7EA] min-h-screen flex items-center justify-center px-4 py-16">
         <div className="max-w-md text-center bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-8">
           <h1 className="text-2xl font-bold text-[#2C2016] mb-2">Entre para finalizar a compra</h1>
           <p className="text-gray-500 mb-6">
@@ -116,23 +116,120 @@ export default function Checkout() {
   }
 
   if (pedidoConfirmado) {
+    const endereco = pedidoConfirmado.enderecoSnapshot;
+    const itensPedido = pedidoConfirmado.itensSnapshot || [];
+    const dataPedido = pedidoConfirmado.data_pedido
+      ? new Date(pedidoConfirmado.data_pedido).toLocaleDateString("pt-BR")
+      : null;
+
     return (
-      <main className="bg-[#F7F3EE] min-h-screen flex items-center justify-center px-4 py-16">
-        <div className="max-w-md text-center bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-8">
-          <h1 className="text-2xl font-bold text-[#2C2016] mb-2">Pedido confirmado</h1>
-          <p className="text-gray-500 mb-1">
-            Pedido nº <strong>{pedidoConfirmado.id_pedido}</strong> — total de{" "}
-            R$ {pedidoConfirmado.valor_total.toFixed(2).replace(".", ",")}
-          </p>
-          <p className="text-gray-500 mb-6">
-            Pagamento via Pix confirmado. Vamos preparar seu pedido para envio.
-          </p>
-          <Link
-            to="/"
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition"
-          >
-            Voltar para a Home
-          </Link>
+      <main className="bg-[#FFF7EA] min-h-screen flex items-center justify-center px-4 py-16">
+        <div className="max-w-2xl w-full bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-8 sm:p-10">
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+              <FaCheck className="text-green-600" size={26} />
+            </div>
+
+            <h1 className="text-3xl font-bold text-[#2C2016] mb-2">Pedido confirmado!</h1>
+            <p className="text-gray-500">
+              Pagamento via Pix confirmado. Vamos preparar seu pedido para envio.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+            <div className="bg-[#FAF7F2] rounded-xl px-4 py-3 text-center">
+              <p className="text-[11px] uppercase tracking-wide text-[#7A5C34] mb-1">Pedido</p>
+              <p className="font-semibold text-[#2C2016]">nº {pedidoConfirmado.id_pedido}</p>
+            </div>
+            {dataPedido ? (
+              <div className="bg-[#FAF7F2] rounded-xl px-4 py-3 text-center">
+                <p className="text-[11px] uppercase tracking-wide text-[#7A5C34] mb-1">Data</p>
+                <p className="font-semibold text-[#2C2016]">{dataPedido}</p>
+              </div>
+            ) : null}
+            <div className="bg-[#FAF7F2] rounded-xl px-4 py-3 text-center">
+              <p className="text-[11px] uppercase tracking-wide text-[#7A5C34] mb-1">Total</p>
+              <p className="font-semibold text-orange-600">
+                R$ {pedidoConfirmado.valor_total.toFixed(2).replace(".", ",")}
+              </p>
+            </div>
+          </div>
+
+          {itensPedido.length > 0 ? (
+            <div className="mb-6">
+              <h2 className="text-[11px] font-medium tracking-wider uppercase text-[#7A5C34] bg-[#F5EDE0] inline-block w-fit px-2.5 py-1 rounded mb-3">
+                Itens do pedido
+              </h2>
+
+              <div className="flex flex-col gap-3 border border-[#E0D5C8] rounded-xl p-4">
+                {itensPedido.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    <img
+                      src={item.imagem}
+                      alt={item.nome}
+                      className="w-12 h-12 object-cover rounded-lg bg-gray-100 flex-shrink-0"
+                      onError={(e) => {
+                        e.target.src = "https://placehold.co/48x48?text=Produto";
+                      }}
+                    />
+                    <span className="flex-1 text-sm text-[#2C2016]">
+                      {item.quantidade}x {item.nome}
+                    </span>
+                    <span className="text-sm font-medium text-[#2C2016] whitespace-nowrap">
+                      R$ {(item.preco * item.quantidade).toFixed(2).replace(".", ",")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            {endereco ? (
+              <div>
+                <h2 className="text-[11px] font-medium tracking-wider uppercase text-[#7A5C34] bg-[#F5EDE0] inline-block w-fit px-2.5 py-1 rounded mb-3">
+                  Endereço de entrega
+                </h2>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {endereco.rua}, {endereco.numero}
+                  {endereco.complemento ? ` - ${endereco.complemento}` : ""}
+                  <br />
+                  {endereco.bairro} - {endereco.cidade}/{endereco.estado}
+                  <br />
+                  CEP {formatCep(endereco.cep)}
+                </p>
+              </div>
+            ) : null}
+
+            <div>
+              <h2 className="text-[11px] font-medium tracking-wider uppercase text-[#7A5C34] bg-[#F5EDE0] inline-block w-fit px-2.5 py-1 rounded mb-3">
+                Forma de pagamento
+              </h2>
+              <p className="text-sm text-gray-600">Pix - pagamento confirmado</p>
+            </div>
+          </div>
+
+          <div className="bg-[#FEF3E2] border border-[#F5C97A] rounded-xl px-4 py-3 mb-8">
+            <p className="text-xs text-[#7A4F00] leading-relaxed">
+              Vamos entrar em contato para combinar os detalhes da entrega. Você pode
+              acompanhar o status do seu pedido a qualquer momento em "Meus Pedidos".
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              to="/meus-pedidos"
+              className="flex-1 text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition"
+            >
+              Ver meus pedidos
+            </Link>
+            <Link
+              to="/"
+              className="flex-1 text-center border border-[#E0D5C8] text-[#7A5C34] font-semibold py-3 rounded-xl hover:bg-[#FAF7F2] transition"
+            >
+              Continuar comprando
+            </Link>
+          </div>
         </div>
       </main>
     );
@@ -140,7 +237,7 @@ export default function Checkout() {
 
   if (itens.length === 0) {
     return (
-      <main className="bg-[#F7F3EE] min-h-screen flex items-center justify-center px-4 py-16">
+      <main className="bg-[#FFF7EA] min-h-screen flex items-center justify-center px-4 py-16">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold text-[#2C2016] mb-2">Seu carrinho está vazio</h1>
           <p className="text-gray-500 mb-6">Adicione produtos antes de finalizar a compra.</p>
@@ -189,28 +286,34 @@ export default function Checkout() {
     setErro("");
     setEnviando(true);
     try {
+      const enderecoFinal = {
+        rua: rua.trim(),
+        numero: numero.trim(),
+        complemento: complemento.trim() || null,
+        bairro: bairro.trim(),
+        cidade: cidade.trim(),
+        estado: estado.trim().toUpperCase(),
+        cep: normalizeCep(cep),
+      };
+
       const pedido = await criarPedido({
         id_usuario: user.id_usuario,
         itens: itens.map((item) => ({
           id_produto: item.id,
           quantidade: item.quantidade,
         })),
-        endereco: {
-          rua: rua.trim(),
-          numero: numero.trim(),
-          complemento: complemento.trim() || null,
-          bairro: bairro.trim(),
-          cidade: cidade.trim(),
-          estado: estado.trim().toUpperCase(),
-          cep: normalizeCep(cep),
-        },
+        endereco: enderecoFinal,
         forma_pagamento: "pix",
         frete: 0,
         parcelas: 1,
       });
 
+      setPedidoConfirmado({
+        ...pedido,
+        itensSnapshot: itens,
+        enderecoSnapshot: enderecoFinal,
+      });
       cart.limparCarrinho();
-      setPedidoConfirmado(pedido);
     } catch (ex) {
       setErro(ex?.message || "Falha ao finalizar pedido");
     } finally {
@@ -219,7 +322,7 @@ export default function Checkout() {
   }
 
   return (
-    <main className="bg-[#F7F3EE] min-h-screen px-4 py-10">
+    <main className="bg-[#FFF7EA] min-h-screen px-4 py-10">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-[#2C2016] mb-8">Finalizar Compra</h1>
 

@@ -48,7 +48,7 @@ export default function MeusPedidos() {
 
   if (!user) {
     return (
-      <main className="bg-[#F7F3EE] min-h-screen flex items-center justify-center px-4 py-16">
+      <main className="bg-[#FFF7EA] min-h-screen flex items-center justify-center px-4 py-16">
         <div className="max-w-md text-center bg-white rounded-2xl border border-[#E0D5C8] shadow-sm p-8">
           <h1 className="text-2xl font-bold text-[#2C2016] mb-2">Entre para ver seus pedidos</h1>
           <p className="text-gray-500 mb-6">
@@ -71,7 +71,7 @@ export default function MeusPedidos() {
   }
 
   return (
-    <main className="bg-[#F7F3EE] min-h-screen px-4 py-10">
+    <main className="bg-[#FFF7EA] min-h-screen px-4 py-10">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-[#2C2016] mb-8">Meus Pedidos</h1>
 

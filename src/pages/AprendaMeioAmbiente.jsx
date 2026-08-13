@@ -40,6 +40,31 @@ export default function AprendaMeioAmbiente() {
       titulo: "Ações Sustentáveis",
       texto:
         "Pequenas atitudes podem contribuir para a preservação do meio ambiente. Economizar água, reduzir a produção de resíduos, reciclar materiais, plantar árvores nativas e apoiar projetos de conservação são exemplos de ações que ajudam a proteger a fauna e a flora. A educação ambiental também desempenha um papel fundamental na conscientização da sociedade."
+    },
+    {
+      titulo: "Biomas Brasileiros e suas Aves",
+      texto:
+        "O Brasil abriga biomas únicos, como a Amazônia, o Cerrado, a Mata Atlântica, a Caatinga, o Pantanal e os Pampas, cada um com espécies de aves adaptadas às suas características específicas. A Amazônia concentra a maior diversidade de aves do planeta, enquanto o Cerrado é lar de espécies endêmicas que não existem em nenhum outro lugar do mundo. Conhecer esses biomas ajuda a entender a importância de preservar cada um deles."
+    },
+    {
+      titulo: "Aves Migratórias",
+      texto:
+        "Muitas espécies de aves realizam grandes migrações sazonais, percorrendo milhares de quilômetros entre áreas de reprodução e alimentação. Esses deslocamentos dependem da preservação de rotas de descanso e de ecossistemas saudáveis ao longo do trajeto. Alterações climáticas e a destruição de habitats intermediários podem comprometer essas jornadas e ameaçar a sobrevivência de populações inteiras."
+    },
+    {
+      titulo: "Espécies Ameaçadas de Extinção",
+      texto:
+        "Diversas espécies de aves brasileiras, como a arara-azul-de-lear e o mutum-do-nordeste, estão na lista de animais ameaçados de extinção. As principais causas incluem desmatamento, caça ilegal, tráfico de animais e perda de habitat. Programas de reprodução em cativeiro, fiscalização ambiental e reflorestamento são algumas das estratégias usadas para reverter esse cenário."
+    },
+    {
+      titulo: "Reciclagem e Compostagem no Dia a Dia",
+      texto:
+        "Separar corretamente o lixo doméstico e destinar resíduos orgânicos para compostagem são hábitos simples que reduzem a quantidade de material enviado a aterros e diminuem a poluição do solo e da água. Restos de frutas, verduras e cascas de sementes usadas na alimentação das aves também podem ser compostados, transformando resíduos em adubo natural para plantas e jardins."
+    },
+    {
+      titulo: "Unidades de Conservação e Áreas Protegidas",
+      texto:
+        "Parques nacionais, reservas biológicas e áreas de proteção ambiental são fundamentais para garantir espaços livres de desmatamento e caça, permitindo que populações de aves se reproduzam e mantenham a diversidade genética. Visitar essas áreas de forma consciente e apoiar organizações de conservação são formas diretas de contribuir para a proteção da fauna silvestre."
     }
   ];
 
@@ -123,6 +148,18 @@ export default function AprendaMeioAmbiente() {
             <li>
               As aves são consideradas excelentes indicadoras da qualidade ambiental.
             </li>
+
+            <li>
+              A Amazônia sozinha abriga mais de 1.300 espécies de aves catalogadas.
+            </li>
+
+            <li>
+              Algumas espécies migratórias percorrem mais de 10 mil quilômetros por ano.
+            </li>
+
+            <li>
+              O Brasil tem mais de 200 espécies de aves endêmicas, encontradas apenas aqui.
+            </li>
           </ul>
         </div>
       </section>
@@ -141,6 +178,8 @@ export default function AprendaMeioAmbiente() {
             <p>• Separar corretamente os resíduos para reciclagem.</p>
             <p>• Apoiar projetos de conservação ambiental.</p>
             <p>• Compartilhar conhecimento sobre preservação da natureza.</p>
+            <p>• Fazer compostagem de resíduos orgânicos em casa.</p>
+            <p>• Visitar e apoiar unidades de conservação e parques naturais.</p>
           </div>
         </div>
       </section>

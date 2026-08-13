@@ -14,6 +14,7 @@ const nomesSubcategorias = {
   racoes: "Rações",
   sementes: "Sementes",
   petiscos: "Petiscos",
+  "alimentos-naturais": "Alimentos Naturais",
   gaiolas: "Gaiolas",
   poleiros: "Poleiros",
   ninhos: "Ninhos",
