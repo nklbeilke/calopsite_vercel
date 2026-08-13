@@ -26,6 +26,8 @@ import Coruja from "./pages/Aves/Coruja";
 
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
+import EsqueciSenha from "./pages/EsqueciSenha";
+import RedefinirSenha from "./pages/RedefinirSenha";
 
 export default function App() {
 
@@ -118,6 +120,8 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/redefinir-senha/:token" element={<RedefinirSenha />} />
       </Routes>
 
       <Footer />

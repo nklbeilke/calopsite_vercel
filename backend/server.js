@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import pool from "./db.js";
 
 dotenv.config();
@@ -116,6 +117,77 @@ app.post("/login", async (req, res) => {
   } catch (erro) {
     console.error("Erro ao fazer login:", erro.message);
     res.status(500).json({ erro: "Erro ao fazer login" });
+  }
+});
+
+app.post("/esqueci-senha", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ erro: "E-mail é obrigatório" });
+  }
+
+  try {
+    const resultado = await pool.query(
+      "SELECT id_usuario FROM usuarios WHERE email = $1",
+      [email]
+    );
+
+    const usuario = resultado.rows[0];
+
+    if (!usuario) {
+      return res.json({
+        mensagem: "Se esse e-mail estiver cadastrado, um link de redefinição foi gerado.",
+      });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expira = new Date(Date.now() + 60 * 60 * 1000);
+
+    await pool.query(
+      "UPDATE usuarios SET reset_token = $1, reset_token_expira = $2 WHERE id_usuario = $3",
+      [token, expira, usuario.id_usuario]
+    );
+
+    res.json({
+      mensagem: "Se esse e-mail estiver cadastrado, um link de redefinição foi gerado.",
+      token_simulado: token,
+    });
+  } catch (erro) {
+    console.error("Erro ao solicitar redefinição de senha:", erro.message);
+    res.status(500).json({ erro: "Erro ao solicitar redefinição de senha" });
+  }
+});
+
+app.post("/redefinir-senha", async (req, res) => {
+  const { token, senha } = req.body;
+
+  if (!token || !senha) {
+    return res.status(400).json({ erro: "Token e nova senha são obrigatórios" });
+  }
+
+  try {
+    const resultado = await pool.query(
+      "SELECT id_usuario FROM usuarios WHERE reset_token = $1 AND reset_token_expira > NOW()",
+      [token]
+    );
+
+    const usuario = resultado.rows[0];
+    if (!usuario) {
+      return res.status(400).json({ erro: "Link de redefinição inválido ou expirado" });
+    }
+
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    await pool.query(
+      "UPDATE usuarios SET senha = $1, reset_token = NULL, reset_token_expira = NULL WHERE id_usuario = $2",
+      [senhaHash, usuario.id_usuario]
+    );
+
+    res.json({ mensagem: "Senha redefinida com sucesso" });
+  } catch (erro) {
+    console.error("Erro ao redefinir senha:", erro.message);
+    res.status(500).json({ erro: "Erro ao redefinir senha" });
   }
 });
 

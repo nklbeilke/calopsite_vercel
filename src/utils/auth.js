@@ -49,6 +49,26 @@ export function logout() {
   localStorage.removeItem(SESSION_KEY);
 }
 
+export async function solicitarRedefinicaoSenha(email) {
+  const res = await fetch(`${API_URL}/esqueci-senha`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  return parseResponse(res);
+}
+
+export async function redefinirSenha(token, senha) {
+  const res = await fetch(`${API_URL}/redefinir-senha`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, senha }),
+  });
+
+  return parseResponse(res);
+}
+
 export function getCurrentUser() {
   return safeParse(localStorage.getItem(SESSION_KEY), null);
 }

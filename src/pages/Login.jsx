@@ -98,6 +98,11 @@ export default function Login() {
                   {mostrarSenha ? "Ocultar" : "Mostrar"}
                 </button>
               </div>
+              <div className="text-right mt-1.5">
+                <Link to="/esqueci-senha" className="text-xs text-[#7A5C34] hover:underline">
+                  Esqueci minha senha
+                </Link>
+              </div>
             </div>
 
             <button
